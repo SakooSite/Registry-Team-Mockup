@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แก้ไขข้อมูลผู้สมัครเรียน</title>
+  <!-- Google Fonts Sarabun -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom Tailwind Config to match original OKLCH theme -->
+  <script src="js/tailwind-config.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    body {
+      background-color: #f8fafc;
+    }
+  </style>
+  <link rel="stylesheet" href="../shared/cross-nav.css">
+</head>
+<body class="font-sans antialiased text-card-foreground">
+<script src="../shared/cross-nav.js"></script>
+
+  <header class="border-b bg-card shadow-sm">
+    <div class="mx-auto flex max-w-[1100px] items-center gap-3 px-6 py-4">
+      <div>
+        <h1 class="text-lg font-bold leading-tight">ระบบบริหารจัดการผู้สมัครเรียน</h1>
+        <p class="text-xs text-muted-foreground">Student Admission System</p>
+      </div>
+      <!-- Tab navigation inside header -->
+      <div class="hidden md:flex items-center gap-1 border-l border-slate-200 pl-4 ml-2" data-legacy-tabs>
+        <a href="index.html" class="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+          <i data-lucide="layout-dashboard" class="h-3.5 w-3.5"></i> บอร์ดรับสมัคร
+        </a>
+        <a href="students.html" class="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+          <i data-lucide="users" class="h-3.5 w-3.5"></i> ข้อมูลนักเรียน
+        </a>
+        <a href="settings.html" class="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+          <i data-lucide="settings" class="h-3.5 w-3.5"></i> ตั้งค่าฟอร์ม
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="mx-auto max-w-[1100px] px-6 py-6 pb-20">
+    <!-- Breadcrumb -->
+    <nav class="mb-4 flex items-center gap-1.5 text-xs text-slate-500">
+      <a href="index.html" class="hover:text-primary transition-colors">หน้าหลัก</a>
+      <i data-lucide="chevron-right" class="h-3 w-3"></i>
+      <a href="index.html" class="hover:text-primary transition-colors">รายชื่อผู้สมัคร</a>
+      <i data-lucide="chevron-right" class="h-3 w-3"></i>
+      <span class="text-slate-700">แก้ไขข้อมูลผู้สมัคร</span>
+    </nav>
+
+    <!-- Error View if applicant not found -->
+    <div id="error-view" class="flex flex-col items-center justify-center gap-3 py-20 bg-card rounded-lg border border-border hidden">
+      <p class="text-slate-500 font-medium">ไม่พบข้อมูลผู้สมัครในระบบ</p>
+      <a href="index.html" class="text-primary hover:underline font-semibold text-sm">กลับหน้าหลัก</a>
+    </div>
+
+    <!-- Edit Profile Content -->
+    <div id="edit-view">
+      <!-- Title -->
+      <div class="mb-6 flex items-start gap-3">
+        <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-indigo-50 text-primary border border-indigo-100">
+          <i data-lucide="pencil" class="h-5 w-5"></i>
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold leading-tight text-slate-800">แก้ไขข้อมูลผู้สมัคร</h2>
+          <p class="text-sm text-slate-500">
+            กรุณาตรวจสอบและแก้ไขข้อมูลให้ถูกต้องตามเอกสารจริง — <span id="applicant-code-title" class="font-bold font-mono text-slate-600">...</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Grid layout -->
+      <div class="grid gap-6 lg:grid-cols-[1fr_320px]">
+        <!-- Form Section -->
+        <div class="space-y-6">
+          
+          <!-- Section 1: Personal Info -->
+          <section class="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+            <header class="flex items-center gap-2 border-b border-border bg-slate-50/50 px-5 py-4">
+              <i data-lucide="badge-check" class="h-5 w-5 text-primary"></i>
+              <h3 class="font-semibold text-slate-800 text-sm">ข้อมูลส่วนตัว (Personal Information)</h3>
+            </header>
+            <div class="grid gap-4 p-5 md:grid-cols-2">
+              <div>
+                <label for="form-prefix" class="block text-xs font-semibold text-slate-500 mb-1.5">คำนำหน้า</label>
+                <select id="form-prefix" class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                  <option value="เด็กชาย">เด็กชาย</option>
+                  <option value="เด็กหญิง">เด็กหญิง</option>
+                  <option value="นาย">นาย</option>
+                  <option value="นางสาว">นางสาว</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="form-first-name" class="block text-xs font-semibold text-slate-500 mb-1.5">ชื่อ (ภาษาไทย)</label>
+                <input type="text" id="form-first-name" class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+              </div>
+
+              <div>
+                <label for="form-last-name" class="block text-xs font-semibold text-slate-500 mb-1.5">นามสกุล (ภาษาไทย)</label>
+                <input type="text" id="form-last-name" class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+              </div>
+
+              <div>
+                <label for="form-name-en" class="block text-xs font-semibold text-slate-500 mb-1.5">Full Name (English)</label>
+                <input type="text" id="form-name-en" class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+              </div>
+
+              <div>
+                <label for="form-dob" class="block text-xs font-semibold text-slate-500 mb-1.5">วัน/เดือน/ปี เกิด</label>
+                <input type="date" id="form-dob" class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+              </div>
+
+              <div class="md:col-span-2">
+                <label for="form-cid" class="block text-xs font-semibold text-slate-500 mb-1.5">เลขบัตรประจำตัวประชาชน</label>
+                <div class="relative">
+                  <input type="text" id="form-cid" maxlength="13" class="block w-full pl-3 pr-10 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary font-mono">
+                  <button type="button" onclick="toggleCidView()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-slate-600">
+                    <i id="cid-toggle-icon" data-lucide="eye" class="h-4 w-4"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Section 1.5: Family Info (บิดา/มารดา/ผู้ปกครอง — เดิมเก็บไว้แต่ไม่มีที่ให้แก้ไขเลย) -->
+          <section class="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+            <header class="flex items-center gap-2 border-b border-border bg-slate-50/50 px-5 py-4">
+              <i data-lucide="users" class="h-5 w-5 text-primary"></i>
+              <h3 class="font-semibold text-slate-800 text-sm">ข้อมูลครอบครัว (Family Information)</h3>
+            </header>
+            <div class="grid gap-4 p-5 md:grid-cols-3">
+              <div>
+                <label for="form-father-name" class="block text-xs font-semibold text-slate-500 mb-1.5">ชื่อ-นามสกุลบิดา</label>
+                <input type="text" id="form-father-name" class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+              </div>
+              <div>
+                <label for="form-father-phone" class="block text-xs font-semibold text-slate-500 mb-1.5">เบอร์โทรบิดา</label>
+                <input type="tel" id="form-father-phone" class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+              </div>
+              <div>
+                <label for="form-father-job" class="block text-xs font-semibold text-slate-500 mb-1.5">อาชีพบิดา</label>
+                <input type="text" id="form-father-job" class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+              </div>
+
+              <div>
+                <label for="form-mother-name" class="block text-xs font-semibold text-slate-500 mb-1.5">ชื่อ-นามสกุลมารดา</label>
+                <input type="text" id="form-mother-name" class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+              </div>
+              <div>
+                <label for="form-mother-phone" class="block text-xs font-semibold text-slate-500 mb-1.5">เบอร์โทรมารดา</label>
+                <input type="tel" id="form-mother-phone" class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+              </div>
+              <div>
+                <label for="form-mother-job" class="block text-xs font-semibold text-slate-500 mb-1.5">อาชีพมารดา</label>
+                <input type="text" id="form-mother-job" class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+              </div>
+
+              <div>
+                <label for="form-guardian-name" class="block text-xs font-semibold text-slate-500 mb-1.5">ชื่อ-นามสกุลผู้ปกครอง (ถ้าไม่ใช่บิดา/มารดา)</label>
+                <input type="text" id="form-guardian-name" class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+              </div>
+              <div>
+                <label for="form-guardian-phone" class="block text-xs font-semibold text-slate-500 mb-1.5">เบอร์โทรผู้ปกครอง</label>
+                <input type="tel" id="form-guardian-phone" class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+              </div>
+              <div>
+                <label for="form-guardian-relation" class="block text-xs font-semibold text-slate-500 mb-1.5">ความเกี่ยวข้องกับนักเรียน</label>
+                <input type="text" id="form-guardian-relation" placeholder="เช่น บิดา, ปู่, ญาติ" class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+              </div>
+            </div>
+          </section>
+
+          <!-- Section 2: Contact Info -->
+          <section class="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+            <header class="flex items-center gap-2 border-b border-border bg-slate-50/50 px-5 py-4">
+              <i data-lucide="map-pin" class="h-5 w-5 text-primary"></i>
+              <h3 class="font-semibold text-slate-800 text-sm">ข้อมูลติดต่อและผู้ปกครอง (Contact & Parents)</h3>
+            </header>
+            <div class="grid gap-4 p-5 md:grid-cols-2">
+              <div>
+                <label for="form-phone" class="block text-xs font-semibold text-slate-500 mb-1.5">เบอร์โทรศัพท์ผู้ปกครอง</label>
+                <input type="tel" id="form-phone" class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+              </div>
+              
+              <div>
+                <label for="form-email" class="block text-xs font-semibold text-slate-500 mb-1.5">อีเมลผู้ปกครอง (ใช้ส่งแจ้งเตือน)</label>
+                <input type="email" id="form-email" class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+              </div>
+              
+              <div class="md:col-span-2">
+                <label for="form-address" class="block text-xs font-semibold text-slate-500 mb-1.5">ที่อยู่ปัจจุบัน</label>
+                <textarea id="form-address" rows="3" class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"></textarea>
+              </div>
+            </div>
+          </section>
+
+          <!-- Section 3: Study Plan Info -->
+          <section class="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+            <header class="flex items-center gap-2 border-b border-border bg-slate-50/50 px-5 py-4">
+              <i data-lucide="school" class="h-5 w-5 text-primary"></i>
+              <h3 class="font-semibold text-slate-800 text-sm">แผนการศึกษา (Study Plan)</h3>
+            </header>
+            <div class="grid gap-4 p-5 md:grid-cols-3">
+              <div>
+                <label for="form-grade" class="block text-xs font-semibold text-slate-500 mb-1.5">ระดับชั้นสมัคร</label>
+                <select id="form-grade" class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                  <option value="ม.1">ม.1</option>
+                  <option value="ม.2">ม.2</option>
+                  <option value="ม.3">ม.3</option>
+                  <option value="ม.4">ม.4</option>
+                  <option value="ม.5">ม.5</option>
+                  <option value="ม.6">ม.6</option>
+                </select>
+              </div>
+              
+              <div>
+                <label for="form-plan-1" class="block text-xs font-semibold text-slate-500 mb-1.5">แผนการเรียนอันดับ 1</label>
+                <select id="form-plan-1" class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                  <!-- Injected via JS -->
+                </select>
+              </div>
+
+              <div>
+                <label for="form-plan-2" class="block text-xs font-semibold text-slate-500 mb-1.5">แผนการเรียนอันดับ 2 (ถ้ามี)</label>
+                <select id="form-plan-2" class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                  <option value="">-- ไม่เลือกอันดับ 2 --</option>
+                  <!-- Injected via JS -->
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <!-- Buttons -->
+          <div class="flex items-center justify-end gap-3">
+            <a href="index.html" id="cancel-link" class="px-5 py-2 text-sm font-semibold rounded-md border bg-card hover:bg-slate-50 border-slate-200 transition-colors">ยกเลิก</a>
+            <button onclick="saveApplicantData()" class="px-5 py-2 text-sm font-semibold rounded-md bg-primary text-primary-foreground hover:bg-primary-hover shadow-sm transition-colors inline-flex items-center gap-1.5">
+              <i data-lucide="save" class="h-4 w-4"></i> บันทึกการแก้ไข
+            </button>
+          </div>
+        </div>
+
+        <!-- Sidebar Info Section -->
+        <div class="space-y-6">
+          <section class="rounded-lg border border-border bg-card p-5 shadow-sm space-y-4">
+            <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider">สถานะใบสมัคร</h4>
+            
+            <div class="space-y-3.5">
+              <div>
+                <div class="text-[10px] text-slate-500 font-semibold mb-1">รหัสผู้สมัครสอบ</div>
+                <div id="side-app-code" class="text-sm font-bold font-mono text-slate-700">...</div>
+              </div>
+              
+              <div>
+                <div class="text-[10px] text-slate-500 font-semibold mb-1">วันที่สมัครเข้าสู่ระบบ</div>
+                <div id="side-app-date" class="text-sm font-semibold text-slate-600">...</div>
+              </div>
+              
+              <div>
+                <div class="text-[10px] text-slate-500 font-semibold mb-1">ห้องเรียนจำลอง</div>
+                <div id="side-app-room" class="text-sm font-bold text-slate-700">...</div>
+              </div>
+
+              <div>
+                <!-- เลขที่ในห้องจัดให้อัตโนมัติ (renumberRoom() ใน js/store.js) แก้ตรงนี้ไม่ได้
+                     ตั้งใจ — ถ้าต้องการเปลี่ยน ให้ใช้ปุ่ม "จัดเลขที่ในห้องใหม่ทั้งโรงเรียน" ใน students.html -->
+                <div class="text-[10px] text-slate-500 font-semibold mb-1">เลขที่ในห้อง (จัดอัตโนมัติ)</div>
+                <div id="side-app-classno" class="text-sm font-bold font-mono text-slate-700">...</div>
+              </div>
+
+              <div>
+                <div class="text-[10px] text-slate-500 font-semibold mb-1">ตรวจสอบความครบถ้วนเอกสาร</div>
+                <div id="side-app-docs" class="inline-flex items-center gap-1 text-xs font-semibold rounded-full px-2.5 py-0.5 mt-1 border">
+                  <!-- Complete badge injected -->
+                </div>
+              </div>
+            </div>
+            
+            <hr class="border-slate-100 my-2">
+            
+            <div class="rounded-md bg-slate-50 border border-slate-100 p-3 space-y-2">
+              <div class="flex items-center gap-1.5 text-slate-500">
+                <i data-lucide="shield-check" class="h-4 w-4 text-emerald-500"></i>
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">ผู้ตรวจและแก้ไขล่าสุด</span>
+              </div>
+              <div class="text-xs text-slate-700">
+                <span id="side-edited-by" class="font-semibold">Admin_Pongsak</span>
+              </div>
+              <div class="text-[10px] text-slate-500">
+                เมื่อวันที่ <span id="side-edited-at">24/05/2024</span>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Load script -->
+  <script src="js/store.js"></script>
+  <script src="js/ui.js"></script>
+  
+  <script>
+    let applicantId = null;
+    let applicantData = null;
+    let isCidMasked = true;
+    let rawCitizenId = '';
+    // จำหน้าที่ลิงก์มาไว้ ใช้ทั้งปุ่ม "ยกเลิก" และตอนบันทึกเสร็จ — เดิม fix ปลายทางเป็น index.html
+    // เสมอ ทั้งที่คนส่วนใหญ่เข้ามาแก้จาก students.html/profile.html แล้วอยากกลับไปที่เดิม
+    let returnUrl = 'index.html';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Extract parameter id from URL
+      const params = new URLSearchParams(window.location.search);
+      applicantId = params.get('id');
+
+      if (!applicantId) {
+        showErrorView();
+        return;
+      }
+
+      applicantData = window.AdmitifyStore.getById(applicantId);
+      if (!applicantData) {
+        showErrorView();
+        return;
+      }
+
+      const referrer = document.referrer || '';
+      if (referrer.indexOf('students.html') !== -1) returnUrl = 'students.html';
+      else if (referrer.indexOf('profile.html') !== -1) returnUrl = `profile.html?id=${applicantId}`;
+      document.getElementById('cancel-link').href = returnUrl;
+
+      // Initialize plan option selectors
+      initializePlanSelectors();
+
+      // Prepopulate values
+      prepopulateForm();
+
+      // Setup icons
+      lucide.createIcons();
+    });
+
+    function showErrorView() {
+      document.getElementById('edit-view').classList.add('hidden');
+      document.getElementById('error-view').classList.remove('hidden');
+    }
+
+    function initializePlanSelectors() {
+      const plan1 = document.getElementById('form-plan-1');
+      const plan2 = document.getElementById('form-plan-2');
+
+      const options = window.STUDY_PLAN_OPTIONS.slice();
+      // If this student's current plan isn't in the (dynamic, settings-driven) options list,
+      // keep it as an extra option so re-saving the form doesn't silently blank/change it out.
+      const a = applicantData;
+      if (a && a.studyPlan && !options.includes(a.studyPlan)) options.push(a.studyPlan);
+      if (a && a.studyPlanPriority2 && !options.includes(a.studyPlanPriority2)) options.push(a.studyPlanPriority2);
+
+      options.forEach(plan => {
+        plan1.innerHTML += `<option value="${plan}">${plan}</option>`;
+        plan2.innerHTML += `<option value="${plan}">${plan}</option>`;
+      });
+    }
+
+    // maskCid ย้ายไป js/ui.js แล้ว (window.maskCid) — โค้ดเดิมเป๊ะ ๆ
+
+    function toggleCidView() {
+      const input = document.getElementById('form-cid');
+      const icon = document.getElementById('cid-toggle-icon');
+      
+      isCidMasked = !isCidMasked;
+      if (isCidMasked) {
+        input.value = maskCid(rawCitizenId);
+        icon.setAttribute('data-lucide', 'eye');
+      } else {
+        input.value = rawCitizenId;
+        icon.setAttribute('data-lucide', 'eye-off');
+      }
+      lucide.createIcons();
+    }
+
+    function prepopulateForm() {
+      const a = applicantData;
+
+      document.getElementById('applicant-code-title').innerText = a.applicantCode;
+      document.getElementById('form-prefix').value = a.prefix || window.studentTitle(a);
+      document.getElementById('form-first-name').value = a.firstName || '';
+      document.getElementById('form-last-name').value = a.lastName || '';
+      document.getElementById('form-name-en').value = a.fullNameEn || '';
+      document.getElementById('form-dob').value = a.dateOfBirth || '';
+      
+      rawCitizenId = a.citizenId || '';
+      document.getElementById('form-cid').value = maskCid(rawCitizenId);
+      
+      // Update form-cid input listener to update rawCitizenId as user types
+      document.getElementById('form-cid').onfocus = function() {
+        if (isCidMasked) {
+          this.value = rawCitizenId;
+        }
+      };
+      document.getElementById('form-cid').onblur = function() {
+        rawCitizenId = this.value.trim().replace(/\D/g, "");
+        if (isCidMasked) {
+          this.value = maskCid(rawCitizenId);
+        }
+      };
+
+      document.getElementById('form-phone').value = a.phone || '';
+      document.getElementById('form-email').value = a.parentEmail || '';
+      document.getElementById('form-address').value = a.address || '';
+
+      document.getElementById('form-father-name').value = a.fatherName || '';
+      document.getElementById('form-father-phone').value = a.fatherPhone || '';
+      document.getElementById('form-father-job').value = a.fatherJob || '';
+      document.getElementById('form-mother-name').value = a.motherName || '';
+      document.getElementById('form-mother-phone').value = a.motherPhone || '';
+      document.getElementById('form-mother-job').value = a.motherJob || '';
+      document.getElementById('form-guardian-name').value = a.guardianName || '';
+      document.getElementById('form-guardian-phone').value = a.guardianPhone || '';
+      document.getElementById('form-guardian-relation').value = a.guardianRelation || '';
+
+      document.getElementById('form-grade').value = a.gradeLevel || 'ม.1';
+      document.getElementById('form-plan-1').value = a.studyPlan || '';
+      document.getElementById('form-plan-2').value = a.studyPlanPriority2 || '';
+
+      // Sidebar info
+      document.getElementById('side-app-code').innerText = a.applicantCode;
+      
+      const applyDate = new Date(a.appliedAt);
+      document.getElementById('side-app-date').innerText = applyDate.toLocaleDateString("th-TH") + ' ' + String(applyDate.getHours()).padStart(2, "0") + ':' + String(applyDate.getMinutes()).padStart(2, "0") + ' น.';
+      document.getElementById('side-app-room').innerText = window.effectiveClassroom(a);
+      document.getElementById('side-app-classno').innerText = a.classNo != null ? a.classNo : '—';
+
+      const docsBadge = document.getElementById('side-app-docs');
+      if (a.documentsComplete) {
+        docsBadge.className = "inline-flex items-center gap-1 text-xs font-semibold rounded-full px-2.5 py-0.5 mt-1 border border-emerald-200 bg-emerald-50 text-emerald-800";
+        docsBadge.innerHTML = '<i data-lucide="check-circle-2" class="h-3 w-3 text-emerald-600"></i> เอกสารครบ';
+      } else {
+        docsBadge.className = "inline-flex items-center gap-1 text-xs font-semibold rounded-full px-2.5 py-0.5 mt-1 border border-rose-200 bg-rose-50 text-rose-800";
+        docsBadge.innerHTML = '<i data-lucide="alert-triangle" class="h-3 w-3 text-rose-600"></i> เอกสารขาดส่ง';
+      }
+
+      if (a.lastEditedBy) {
+        document.getElementById('side-edited-by').innerText = a.lastEditedBy;
+      }
+      if (a.lastEditedAt) {
+        const lastEditDate = new Date(a.lastEditedAt);
+        document.getElementById('side-edited-at').innerText = lastEditDate.toLocaleDateString("th-TH");
+      }
+    }
+
+    function saveApplicantData() {
+      const prefix = document.getElementById('form-prefix').value;
+      const firstName = document.getElementById('form-first-name').value.trim();
+      const lastName = document.getElementById('form-last-name').value.trim();
+      const fullNameEn = document.getElementById('form-name-en').value.trim();
+      const dateOfBirth = document.getElementById('form-dob').value;
+      const phone = document.getElementById('form-phone').value.trim();
+      const parentEmail = document.getElementById('form-email').value.trim();
+      const address = document.getElementById('form-address').value.trim();
+
+      const fatherName = document.getElementById('form-father-name').value.trim();
+      const fatherPhone = document.getElementById('form-father-phone').value.trim();
+      const fatherJob = document.getElementById('form-father-job').value.trim();
+      const motherName = document.getElementById('form-mother-name').value.trim();
+      const motherPhone = document.getElementById('form-mother-phone').value.trim();
+      const motherJob = document.getElementById('form-mother-job').value.trim();
+      const guardianName = document.getElementById('form-guardian-name').value.trim();
+      const guardianPhone = document.getElementById('form-guardian-phone').value.trim();
+      const guardianRelation = document.getElementById('form-guardian-relation').value.trim();
+
+      const gradeLevel = document.getElementById('form-grade').value;
+      const studyPlan = document.getElementById('form-plan-1').value;
+      const studyPlanPriority2 = document.getElementById('form-plan-2').value;
+
+      if (!firstName || !lastName || !parentEmail) {
+        AdmissionUI.alert('กรุณากรอกข้อมูลที่จำเป็น (ชื่อ, นามสกุล และอีเมลผู้ปกครอง)');
+        return;
+      }
+
+      // Read citizen ID value properly
+      const cidInput = document.getElementById('form-cid');
+      let finalCid = rawCitizenId;
+      if (!isCidMasked) {
+        finalCid = cidInput.value.trim().replace(/\D/g, "");
+      }
+
+      const patch = {
+        prefix,
+        gender: (prefix === 'เด็กหญิง' || prefix === 'นางสาว') ? 'female' : 'male',
+        firstName,
+        lastName,
+        fullNameEn,
+        dateOfBirth,
+        citizenId: finalCid,
+        phone,
+        parentEmail,
+        address,
+        fatherName, fatherPhone, fatherJob,
+        motherName, motherPhone, motherJob,
+        guardianName, guardianPhone, guardianRelation,
+        gradeLevel,
+        studyPlan,
+        studyPlanPriority2: studyPlanPriority2 || undefined
+      };
+
+      window.AdmitifyStore.updateApplicant(applicantId, patch);
+
+      // กลับไปหน้าที่ลิงก์เข้ามาแก้ (students.html/profile.html) แทนที่จะ fix เป็น index.html เสมอ
+      window.location.href = returnUrl;
+    }
+  </script>
+
+<!-- เมนูข้ามระบบ (ปุ่ม "ระบบอื่น" บนแถบหัวหน้า) -->
+</body>
+</html>

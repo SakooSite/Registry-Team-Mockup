@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>โปรไฟล์ | พอร์ทัลผู้ปกครอง</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind-config.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="font-sans antialiased bg-muted text-card-foreground min-h-screen">
+  <div id="parent-nav"></div>
+  <main class="max-w-6xl mx-auto px-4 py-6">
+    <h1 class="sr-only">โปรไฟล์</h1>
+    <div class="space-y-6">
+      <div class="bg-card rounded-xl border border-border shadow-sm p-5">
+        <div id="parent-editor"></div>
+      </div>
+
+      <div class="bg-card rounded-xl border border-border shadow-sm p-5">
+        <h2 class="font-bold text-card-foreground mb-4">ข้อมูลบุตร</h2>
+        <div id="children-info" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        <p class="text-sm text-muted-foreground mt-4">หากข้อมูลไม่ถูกต้อง กรุณาติดต่อฝ่ายทะเบียนของโรงเรียน</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/parent-store.js"></script>
+  <script src="js/parent-nav.js"></script>
+  <script src="js/parent-profile-editor.js"></script>
+  <script>
+    (function () {
+      var esc = ParentUI.escapeHtml;
+
+      /* ---------------- การ์ด 1: ข้อมูลผู้ปกครอง (แสดง/แก้ไข + รูปโปรไฟล์) ---------------- */
+      ParentProfileEditor.mount(document.getElementById('parent-editor'));
+
+      /* ---------------- การ์ด 2: ข้อมูลบุตร (อ่านอย่างเดียว) ---------------- */
+      (function renderChildren() {
+        var children = ParentStore.getChildren();
+        var html = children.map(function (c) {
+          var fullName = esc(c.prefix) + esc(c.firstName) + ' ' + esc(c.lastName);
+          return '<div class="border border-border rounded-lg p-4">' +
+            '<div class="font-bold text-card-foreground">' + fullName + ' <span class="font-normal text-muted-foreground">(' + esc(c.nickname) + ')</span></div>' +
+            '<div class="grid grid-cols-2 gap-x-3 gap-y-1 text-sm mt-2">' +
+              '<div class="text-muted-foreground">รหัสนักเรียน</div><div class="text-card-foreground">' + esc(c.studentId) + '</div>' +
+              '<div class="text-muted-foreground">ห้อง/เลขที่</div><div class="text-card-foreground">' + esc(c.classroom) + ' / ' + esc(c.no) + '</div>' +
+              '<div class="text-muted-foreground">แผนการเรียน</div><div class="text-card-foreground">' + esc(c.studyPlan) + '</div>' +
+              '<div class="text-muted-foreground">วันเกิด</div><div class="text-card-foreground">' + esc(ParentUI.fmtDate(c.dob)) + '</div>' +
+              '<div class="text-muted-foreground">กรุ๊ปเลือด</div><div class="text-card-foreground">' + esc(c.bloodType) + '</div>' +
+              '<div class="text-muted-foreground">ครูประจำชั้น</div><div class="text-card-foreground">' + esc(c.homeroomTeacher) + '</div>' +
+            '</div>' +
+            '<a href="student.html?id=' + esc(c.id) + '" class="inline-block mt-3 text-sm text-primary hover:underline">ดูประวัติเต็ม →</a>' +
+          '</div>';
+        }).join('');
+
+        document.getElementById('children-info').innerHTML = html;
+      })();
+
+      if (window.lucide) lucide.createIcons();
+    })();
+  </script>
+</body>
+</html>
